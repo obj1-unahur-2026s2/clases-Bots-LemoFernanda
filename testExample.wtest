@@ -1,9 +1,69 @@
-import example.pepita
+import example.*
 
-describe "group of tests for pepita" {
+describe " Tests de la parte 1 sobre Pdwtwitter y Bots" {
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
+test "Benito avisa a la policia cuando el tweet contiene una palabra de su lista negra"{
+pdtwitter.agregarBot(benito)
+pdtwitter.twittear("ana",["ocurrio", "un","robo","ayer"])
+
+assert.equals([["ana", ["ocurrio", "un", "robo", "ayer"]]], policia.denuncias())
+
+}
+test "BotPublicidad responde con mensaje, link y usuario cuando coincide con la palabra actual" {
+    const botCafe = new BotPublicidad(
+      palabraPuntual = "cafe", 
+      mensaje = "Probá el mejor café acá:", 
+      link = "http://cafe.com"
+    )
+
+    const respuesta = botCafe.responder(["quiero", "tomar", "un", "cafe"], "abi")
+
+    assert.equals("Probá el mejor café acá: http://cafe.com @abi", respuesta)
   }
 
+  test "BotRecolector guarda informacion de todos los usuarios que twittean" {
+    const recolector = new BotRecolector()
+    pdtwitter.agregarBot(recolector)
+
+    pdtwitter.twittear("fer", ["hola", "buen", "dia"])
+
+    assert.equals(["fer"], recolector.usuariosQueTwittearon())
+  }
+
+  test "Home del usuario devuelve los tweets que lo arroban" {
+    pdtwitter.twittear("juan", ["hola", "@ana", "como", "estas"])
+    pdtwitter.twittear("maria", ["hola", "a", "todos"])
+
+    assert.equals([["hola", "@ana", "como", "estas"]], pdtwitter.home("ana"))
+  }
+
+  test "Tweets a la nada devuelve los tweets que no arroban a nadie" {
+    pdtwitter.twittear("juan", ["hola", "buen", "dia"])
+    pdtwitter.twittear("maria", ["hola", "@abi", "que", "tal"])
+
+    assert.equals([["hola", "buen", "dia"]], pdtwitter.tweetsALaNada())
+}}
+
+
+// Parte 2
+test "Probar tweet con imagen y respuesta de bot de publicidad" {
+  
+  // Crear una imagen
+  const fotoPromo = new Imagen(nombre = "oferta.jpg", tamanoBytes = 2048)
+  
+  // Crear un tweet que use la imagen
+  const tweetConFoto = new Tweet(palabras = ["quiero", "un", "descuento"], imagen = fotoPromo)
+  
+  // Crear el bot de publicidad con imagen
+  const botPromo = new BotPublicidad(
+    palabraPuntual = "descuento", 
+    mensaje = "¡Aprovechá el descuento!", 
+    link = "http://promo.com",
+    imagen = fotoPromo
+  )
+
+  
+  assert.equals(fotoPromo, tweetConFoto.imagen())
+  assert.that(tweetConFoto.tieneImagen())
+  assert.equals(fotoPromo, botPromo.imagen())
 }
